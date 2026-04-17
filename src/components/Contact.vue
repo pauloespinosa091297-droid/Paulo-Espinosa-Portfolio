@@ -147,10 +147,17 @@
 
             const result = await response.json();
 
-            if(result.success) {
-                isLoading.value = false;
-                notyf.success("Message Sent!");
-            }
+         if(result.success) {
+             notyf.success("Message Sent!");
+
+             
+             name.value = "";
+             email.value = "";
+             message.value = "";
+
+            
+             resetRecaptcha();
+         }
 
         } catch(e) {
             console.log(e);
