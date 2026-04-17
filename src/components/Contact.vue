@@ -69,30 +69,19 @@
       <div class="modal-body">
         Your message has been successfully sent.
       </div>
+      <div class="modal-footer">
+          <button 
+            type="button" 
+            class="btn btn-primary" 
+            data-bs-dismiss="modal">
+            OK
+          </button>
+        </div>
 
   </div>
 </div>
 </div>
 
-<div class="modal fade" id="thankYouModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center p-4">
-      <div class="modal-body">
-        <h4 class="mb-3">Thank you for reaching out!</h4>
-        <p class="text-muted">
-          I’ll get back to you as soon as possible.
-        </p>
-        <button
-        type="button"
-        class="btn custom-btn mt-3"
-        data-bs-dismiss="modal"
-        >
-        OK
-      </button>
-    </div>
-  </div>
-</div>
-</div>
 </template>
 
 <script setup>
