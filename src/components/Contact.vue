@@ -48,6 +48,9 @@
            :disabled="isLoading">
            {{ isLoading ? "Sending..." : "Submit" }}
          </button>
+         <div class="d-flex justify-content-end mt-3">
+           <div ref="recaptchaContainer"></div>
+         </div>
        </form>
      </div> 
    </div> 
@@ -102,51 +105,101 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
   import { Notyf } from 'notyf';
   import 'notyf/notyf.min.css';
 
   const notyf = new Notyf();
+
   const WEB3FORMS_ACCESS_KEY = "5ba601de-6da4-4b8b-81cd-7865d1fd1006";
-  const subject = "New message from Portfolio Contact Form";
+  const SITE_KEY = "6LckWLwsAAAAAOQJrVKsT7vfZmLnww9JzR9xk2q9";
 
   const name = ref("");
   const email = ref("");
   const message = ref("");
   const isLoading = ref(false);
 
-  const submitForm = async() => {
-  // REMOVED the recaptchaToken check because you are on the Free Tier
+  const recaptchaContainer = ref(null);
+  const recaptchaToken = ref("");
+  let widgetId = null;
+
+  // CAPTCHA success
+  function onCaptchaSuccess(token) {
+    recaptchaToken.value = token;
+  }
+
+  // render CAPTCHA
+  function renderCaptcha() {
+    if (!window.grecaptcha) return;
+
+    widgetId = window.grecaptcha.render(recaptchaContainer.value, {
+      sitekey: SITE_KEY,
+      callback: onCaptchaSuccess,
+    });
+  }
+
+  // reset CAPTCHA
+  function resetCaptcha() {
+    if (widgetId !== null) {
+      window.grecaptcha.reset(widgetId);
+      recaptchaToken.value = "";
+    }
+  }
+
+  // SUBMIT FORM
+  const submitForm = async () => {
+    if (!recaptchaToken.value) {
+      notyf.error("Please complete the CAPTCHA");
+      return;
+    }
+
     isLoading.value = true;
 
     try {
       const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
           access_key: WEB3FORMS_ACCESS_KEY,
-          subject: subject,
           name: name.value,
           email: email.value,
           message: message.value,
-        // Add this for free spam protection
-          botcheck: "" 
+          subject: "New message from Portfolio",
+          "g-recaptcha-response": recaptchaToken.value
         })
       });
 
       const result = await response.json();
 
-      if(result.success) {
+      if (result.success) {
         notyf.success("Message Sent!");
-      // Clear form
-        name.value = ""; email.value = ""; message.value = "";
+
+        name.value = "";
+        email.value = "";
+        message.value = "";
+        resetCaptcha();
       } else {
-        notyf.error(result.message);
+        console.log(result);
+        notyf.error(result.message || "Error sending message");
       }
-    } catch(e) {
-      notyf.error("Failed to send message.");
+
+    } catch (error) {
+      console.error(error);
+      notyf.error("Network error");
     } finally {
       isLoading.value = false;
     }
-  }
+  };
+
+  // MOUNT
+  onMounted(() => {
+    const interval = setInterval(() => {
+      if (window.grecaptcha && recaptchaContainer.value) {
+        renderCaptcha();
+        clearInterval(interval);
+      }
+    }, 100);
+  });
 </script>

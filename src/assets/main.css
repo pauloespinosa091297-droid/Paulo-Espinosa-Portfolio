@@ -35,7 +35,7 @@ nav a {
   linear-gradient( 
     rgba(0, 34, 65, 0.61), 
     rgba(0, 34, 65, 0.61)
-  ),url(images/landing.png);
+  ),url(./images/landing.png);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
