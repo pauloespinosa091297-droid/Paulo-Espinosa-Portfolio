@@ -29,17 +29,17 @@
           <div class="contact-form-wrapper mx-auto">
            <form @submit.prevent="submitForm"> <div class="mb-3">
              <label class="form-label">Name</label>
-             <input type="text" class="form-control" v-model="name" required>
+             <input type="text" class="form-control" placeholder="Full name" v-model="name" required>
            </div>
 
            <div class="mb-3">
              <label class="form-label">Email Address</label>
-             <input type="email" class="form-control" v-model="email" required>
+             <input type="email" class="form-control" placeholder="Email" v-model="email" required>
            </div>
 
            <div class="mb-4">
              <label class="form-label">Message</label>
-             <textarea class="form-control" rows="5" v-model="message" required></textarea>
+             <textarea class="form-control" rows="5" placeholder="Message" v-model="message" required></textarea>
            </div>
 
            <button
