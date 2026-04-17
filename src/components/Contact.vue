@@ -114,7 +114,8 @@
 
   const notyf = new Notyf();
 
-  const WEB3FORMS_ACCESS_KEY = "e27cfaa0-9fd5-463d-b6a5-cc182c995c7e";
+  const WEB3FORMS_ACCESS_KEY = "b178b093-4dff-4529-a71c-25f184b6ecc3";
+  
 
   const subject = "New message from Portfolio Contact Form";
 
@@ -162,7 +163,7 @@
     }
   }
 
-    const SITE_KEY = '6LfLKLwsAAAAAJRE2mPHk0DdW3etJA5OQl2Ori-F';  // Replace with your site key
+    const SITE_KEY = '6LdaOrwsAAAAANJuzslgfdRy9n7P1bqQZxKtkiHh';  // Replace with your site key
 
     const recaptchaContainer = ref(null);
     const recaptchaWidgetId = ref(null);
