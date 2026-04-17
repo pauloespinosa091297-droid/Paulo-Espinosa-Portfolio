@@ -105,101 +105,115 @@
 </template>
 
 <script setup>
-  import { ref, onMounted } from 'vue';
-  import { Notyf } from 'notyf';
-  import 'notyf/notyf.min.css';
+    import { ref, onMounted, onBeforeUnmount } from 'vue';
+    import { Notyf } from 'notyf';
+    import 'notyf/notyf.min.css';
 
-  const notyf = new Notyf();
+    const notyf = new Notyf();
 
-  const WEB3FORMS_ACCESS_KEY = "5ba601de-6da4-4b8b-81cd-7865d1fd1006";
-  const SITE_KEY = "6LckWLwsAAAAAOQJrVKsT7vfZmLnww9JzR9xk2q9";
+    const WEB3FORMS_ACCESS_KEY = "e27cfaa0-9fd5-463d-b6a5-cc182c995c7e";
 
-  const name = ref("");
-  const email = ref("");
-  const message = ref("");
-  const isLoading = ref(false);
+    const subject = "New message from Portfolio Contact Form";
 
-  const recaptchaContainer = ref(null);
-  const recaptchaToken = ref("");
-  let widgetId = null;
+    const name = ref("");
+    const email = ref("");
+    const message = ref("");
+    const isLoading = ref(false);
+    const submitForm = async() => {
 
-  // CAPTCHA success
-  function onCaptchaSuccess(token) {
-    recaptchaToken.value = token;
-  }
+        // Check if reCAPTCHA token is present, return an error when not verified.
+        if (!recaptchaToken.value) {
+            notyf.error('Please verify that you are not a robot.');
+            return;
+        }
 
-  // render CAPTCHA
-  function renderCaptcha() {
-    if (!window.grecaptcha) return;
+        isLoading.value = true;
 
-    widgetId = window.grecaptcha.render(recaptchaContainer.value, {
-      sitekey: SITE_KEY,
-      callback: onCaptchaSuccess,
-    });
-  }
+        try {
 
-  // reset CAPTCHA
-  function resetCaptcha() {
-    if (widgetId !== null) {
-      window.grecaptcha.reset(widgetId);
-      recaptchaToken.value = "";
+            const response = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    access_key: WEB3FORMS_ACCESS_KEY,
+                    subject: subject,
+                    name: name.value,
+                    email: email.value,
+                    message: message.value
+                })
+            })
+
+            const result = await response.json();
+
+            if(result.success) {
+                isLoading.value = false;
+                notyf.success("Message Sent!");
+            }
+
+        } catch(e) {
+            console.log(e);
+            isLoading.value = false;
+            notyf.error("Failed to send a message. Please try again.")
+        }
     }
-  }
 
-  // SUBMIT FORM
-  const submitForm = async () => {
-    if (!recaptchaToken.value) {
-      notyf.error("Please complete the CAPTCHA");
-      return;
+    const SITE_KEY = '6LfLKLwsAAAAAJRE2mPHk0DdW3etJA5OQl2Ori-F';  // Replace with your site key
+
+    const recaptchaContainer = ref(null);
+    const recaptchaWidgetId = ref(null);
+    const recaptchaToken = ref('');
+
+    // Callback called by reCAPTCHA when successful
+    function onRecaptchaSuccess(token) {
+      recaptchaToken.value = token;
     }
 
-    isLoading.value = true;
+    // Callback when expired
+    function onRecaptchaExpired() {
+      recaptchaToken.value = '';
+    }
 
-    try {
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          access_key: WEB3FORMS_ACCESS_KEY,
-          name: name.value,
-          email: email.value,
-          message: message.value,
-          subject: "New message from Portfolio",
-          "g-recaptcha-response": recaptchaToken.value
-        })
+    // Function to render the reCAPTCHA widget
+    function renderRecaptcha() {
+      if (!window.grecaptcha) {
+        console.error('reCAPTCHA not loaded');
+        return;
+      }
+
+      recaptchaWidgetId.value = window.grecaptcha.render(recaptchaContainer.value, {
+        sitekey: SITE_KEY,
+        size: 'normal', // or 'compact'
+        callback: onRecaptchaSuccess,
+        'expired-callback': onRecaptchaExpired,
       });
-
-      const result = await response.json();
-
-      if (result.success) {
-        notyf.success("Message Sent!");
-
-        name.value = "";
-        email.value = "";
-        message.value = "";
-        resetCaptcha();
-      } else {
-        console.log(result);
-        notyf.error(result.message || "Error sending message");
-      }
-
-    } catch (error) {
-      console.error(error);
-      notyf.error("Network error");
-    } finally {
-      isLoading.value = false;
     }
-  };
 
-  // MOUNT
-  onMounted(() => {
-    const interval = setInterval(() => {
-      if (window.grecaptcha && recaptchaContainer.value) {
-        renderCaptcha();
-        clearInterval(interval);
+    // Function to reset reCAPTCHA 
+    function resetRecaptcha() {
+      if (recaptchaWidgetId.value !== null) {
+        window.grecaptcha.reset(recaptchaWidgetId.value);
+        recaptchaToken.value = '';
       }
-    }, 100);
-  });
+    }
+
+
+
+    onMounted(() => {
+      // This code waits for the Google reCAPTCHA library to load, then renders the reCAPTCHA widget using onMounted hook. 
+      // The widget is rendered with grecaptcha.render(), which requires a sitekey. 
+      // Callback functions handle success and expiration events. 
+      // reCAPTCHA is reset upon form submission to clear the token.
+      const interval = setInterval(() => {
+        if (window.grecaptcha && window.grecaptcha.render) {
+          renderRecaptcha();
+          clearInterval(interval);
+        }
+      }, 100);
+
+      onBeforeUnmount(() => {
+        clearInterval(interval);
+      });
+    });
 </script>
