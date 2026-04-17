@@ -5,13 +5,12 @@
         <div id="image" class="col-md-6 mb-4 mb-md-0">
           <div class="ratio ratio-16x9 mb-3">
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d15442.13!2d121.0!3d14.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sph!4v1" 
+              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d15444.2154444!2d121.0!3d14.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sph!4v1710000000000" 
               width="600" 
               height="450" 
               style="border:0;" 
               allowfullscreen="" 
-              loading="lazy" 
-              referrerpolicy="no-referrer-when-downgrade">
+              loading="lazy">
             </iframe>
           </div>
         </div>
@@ -40,7 +39,7 @@
                 <button
                   type="submit"
                   id="submitBtn"
-                  class="btn custom-btn"
+                  class="btn btn-primary"
                   :disabled="isLoading">
                   {{ isLoading ? "Sending..." : "Submit" }}
                 </button>
@@ -84,7 +83,6 @@ const notyf = new Notyf();
 const WEB3FORMS_ACCESS_KEY = "f646aa6d-e4ba-4130-a027-5dc2f00c9c8b";
 const SITE_KEY = '6LdaOrwsAAAAANJuzslgfdRy9n7P1bqQZxKtkiHh'; 
 
-const subject = "New message from Portfolio Contact Form";
 const name = ref("");
 const email = ref("");
 const message = ref("");
@@ -134,11 +132,11 @@ const submitForm = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         access_key: WEB3FORMS_ACCESS_KEY,
-        subject: subject,
         name: name.value,
         email: email.value,
         message: message.value,
-        "g-recaptcha-response": recaptchaToken.value
+       
+        recaptcha_response: recaptchaToken.value 
       })
     });
 
@@ -147,27 +145,29 @@ const submitForm = async () => {
     if (result.success) {
       notyf.success("Message Sent!");
       
-      // Reset data
+      // Clear data
       name.value = "";
       email.value = "";
       message.value = "";
       resetRecaptcha();
 
-     
+    
       await nextTick();
 
+      // Trigger Modal
       if (window.bootstrap) {
         const modal = new window.bootstrap.Modal(successModalRef.value);
         modal.show();
       } else {
-     
-        alert("Success! Your message was sent.");
+        console.error("Bootstrap JS not found. Modal couldn't open.");
       }
     } else {
-      notyf.error("Form submission failed.");
+      // Show exact error message from API
+      notyf.error(result.message || "Form submission failed.");
     }
   } catch (e) {
-    notyf.error("An error occurred. Please try again.");
+    notyf.error("An error occurred. Check your internet connection.");
+    console.error("Submission error:", e);
   } finally {
     isLoading.value = false;
   }
