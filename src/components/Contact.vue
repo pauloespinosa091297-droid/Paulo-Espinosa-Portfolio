@@ -19,38 +19,30 @@
         <!-- FORM -->
         <div class="col-lg-6 shadow-md">
           <div class="border rounded shadow-sm p-4 h-100">
-            <h3 id="contact-title">CONTACT US</h3>
+            <h3>CONTACT US</h3>
 
-            <div class="contact-form-wrapper mx-auto">
-              <form @submit.prevent="submitForm">
+            <form @submit.prevent="submitForm">
 
-                <div class="mb-3">
-                  <label class="form-label">Name</label>
-                  <input type="text" class="form-control" v-model="name" required>
-                </div>
+              <div class="mb-3">
+                <label>Name</label>
+                <input type="text" class="form-control" v-model="name" required>
+              </div>
 
-                <div class="mb-3">
-                  <label class="form-label">Email Address</label>
-                  <input type="email" class="form-control" v-model="email" required>
-                </div>
+              <div class="mb-3">
+                <label>Email</label>
+                <input type="email" class="form-control" v-model="email" required>
+              </div>
 
-                <div class="mb-4">
-                  <label class="form-label">Message</label>
-                  <textarea class="form-control" rows="5" v-model="message" required></textarea>
-                </div>
+              <div class="mb-4">
+                <label>Message</label>
+                <textarea class="form-control" rows="5" v-model="message" required></textarea>
+              </div>
 
-            
-                <button type="submit" class="btn custom-btn" :disabled="isLoading">
-                  {{ isLoading ? "Sending..." : "Submit" }}
-                </button>
+              <button type="submit" class="btn custom-btn" :disabled="isLoading">
+                {{ isLoading ? "Sending..." : "Submit" }}
+              </button>
 
-                <!-- CAPTCHA -->
-                <div class="d-flex justify-content-end mt-3">
-                  <div ref="recaptchaContainer"></div>
-                </div>
-
-              </form>
-            </div> 
+            </form>
           </div> 
         </div> 
 
@@ -63,14 +55,9 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content text-center p-4">
         <div class="modal-body">
-          <h4 class="mb-3">Message Sent</h4>
-          <p class="text-muted">
-            Your message has been successfully sent.
-          </p>
-          <button
-            type="button"
-            class="btn custom-btn mt-3"
-            data-bs-dismiss="modal">
+          <h4>Message Sent</h4>
+          <p>Your message has been successfully sent.</p>
+          <button class="btn custom-btn mt-3" data-bs-dismiss="modal">
             OK
           </button>
         </div>
@@ -80,59 +67,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref } from 'vue';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
 
 const notyf = new Notyf();
 
 const WEB3FORMS_ACCESS_KEY = "5ba601de-6da4-4b8b-81cd-7865d1fd1006";
-const SITE_KEY = '6LckWLwsAAAAAOQJrVKsT7vfZmLnww9JzR9xk2q9';
 
 const name = ref("");
 const email = ref("");
 const message = ref("");
 const isLoading = ref(false);
 
-const recaptchaContainer = ref(null);
-const recaptchaWidgetId = ref(null);
-const recaptchaToken = ref('');
-
-// CAPTCHA CALLBACKS
-function onRecaptchaSuccess(token) {
-  recaptchaToken.value = token;
-}
-
-function onRecaptchaExpired() {
-  recaptchaToken.value = '';
-}
-
-// RENDER CAPTCHA
-function renderRecaptcha() {
-  if (!window.grecaptcha) return;
-
-  recaptchaWidgetId.value = window.grecaptcha.render(recaptchaContainer.value, {
-    sitekey: SITE_KEY,
-    callback: onRecaptchaSuccess,
-    'expired-callback': onRecaptchaExpired,
-  });
-}
-
-// RESET CAPTCHA
-function resetRecaptcha() {
-  if (recaptchaWidgetId.value !== null) {
-    window.grecaptcha.reset(recaptchaWidgetId.value);
-    recaptchaToken.value = '';
-  }
-}
-
-// SUBMIT FORM
 const submitForm = async () => {
-  if (!recaptchaToken.value) {
-    notyf.error('Please verify that you are not a robot.');
-    return;
-  }
-
   isLoading.value = true;
 
   try {
@@ -146,8 +94,7 @@ const submitForm = async () => {
         subject: "New message from Portfolio",
         name: name.value,
         email: email.value,
-        message: message.value,
-        "g-recaptcha-response": recaptchaToken.value
+        message: message.value
       })
     });
 
@@ -156,17 +103,17 @@ const submitForm = async () => {
     if (result.success) {
       notyf.success("Message Sent!");
 
-     
+      // SHOW MODAL
       const modal = new bootstrap.Modal(document.getElementById('successModal'));
       modal.show();
 
-    
+      // RESET FORM
       name.value = "";
       email.value = "";
       message.value = "";
-      resetRecaptcha();
     } else {
-      notyf.error("Something went wrong.");
+      console.log(result);
+      notyf.error(result.message || "Something went wrong.");
     }
 
   } catch (error) {
@@ -176,18 +123,4 @@ const submitForm = async () => {
     isLoading.value = false;
   }
 };
-
-
-onMounted(() => {
-  const interval = setInterval(() => {
-    if (window.grecaptcha && window.grecaptcha.render) {
-      renderRecaptcha();
-      clearInterval(interval);
-    }
-  }, 100);
-
-  onBeforeUnmount(() => {
-    clearInterval(interval);
-  });
-});
 </script>
