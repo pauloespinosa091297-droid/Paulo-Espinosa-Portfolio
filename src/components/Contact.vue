@@ -3,11 +3,9 @@
     <div class="container-fluid p-0">
       <div class="row g-0 min-vh-100">
         <div id="image" class="col-md-6 mb-4 mb-md-0">
-          <div class="ratio ratio-16x9 mb-3">
+          <div class="ratio ratio-16x9 h-100">
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d15444.2154444!2d121.0!3d14.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sph!4v1710000000000" 
-              width="600" 
-              height="450" 
+              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d15444.4!2d121.0!3d14.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sph!4v1710000000000!5m2!1sen!2sph" 
               style="border:0;" 
               allowfullscreen="" 
               loading="lazy">
@@ -23,22 +21,21 @@
               <form @submit.prevent="submitForm" id="contactForm">
                 <div class="mb-3">
                   <label class="form-label">Name</label>
-                  <input type="text" class="form-control" placeholder="Juan Dela Cruz" v-model="name" required>
+                  <input type="text" class="form-control" v-model="name" required>
                 </div>
 
                 <div class="mb-3">
                   <label class="form-label">Email Address</label>
-                  <input type="email" class="form-control" placeholder="juan.delacruz@mail.com" v-model="email" required>
+                  <input type="email" class="form-control" v-model="email" required>
                 </div>
 
                 <div class="mb-4">
                   <label class="form-label">Message</label>
-                  <textarea class="form-control" rows="5" placeholder="Leave a message here" v-model="message" required></textarea>
+                  <textarea class="form-control" rows="5" v-model="message" required></textarea>
                 </div>
 
                 <button
                   type="submit"
-                  id="submitBtn"
                   class="btn btn-primary"
                   :disabled="isLoading">
                   {{ isLoading ? "Sending..." : "Submit" }}
@@ -55,16 +52,14 @@
     </div> 
   </section>
 
-  <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true" ref="successModalRef">
+  <div class="modal fade" id="successModal" tabindex="-1" ref="successModalRef">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Message Sent</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body">
-          Your message has been successfully sent.
-        </div>
+        <div class="modal-body">Your message has been successfully sent!</div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>
         </div>
@@ -80,35 +75,34 @@ import 'notyf/notyf.min.css';
 
 const notyf = new Notyf();
 
+
 const WEB3FORMS_ACCESS_KEY = "f646aa6d-e4ba-4130-a027-5dc2f00c9c8b";
 const SITE_KEY = '6LdaOrwsAAAAANJuzslgfdRy9n7P1bqQZxKtkiHh'; 
+
 
 const name = ref("");
 const email = ref("");
 const message = ref("");
 const isLoading = ref(false);
 
+
 const recaptchaContainer = ref(null);
 const successModalRef = ref(null);
 const recaptchaWidgetId = ref(null);
 const recaptchaToken = ref('');
 
-function onRecaptchaSuccess(token) {
-  recaptchaToken.value = token;
-}
 
-function onRecaptchaExpired() {
-  recaptchaToken.value = '';
-}
+const onRecaptchaSuccess = (token) => { recaptchaToken.value = token; };
+const onRecaptchaExpired = () => { recaptchaToken.value = ''; };
 
-function resetRecaptcha() {
+const resetRecaptcha = () => {
   if (recaptchaWidgetId.value !== null && window.grecaptcha) {
     window.grecaptcha.reset(recaptchaWidgetId.value);
     recaptchaToken.value = '';
   }
-}
+};
 
-function renderRecaptcha() {
+const renderRecaptcha = () => {
   if (window.grecaptcha && window.grecaptcha.render) {
     recaptchaWidgetId.value = window.grecaptcha.render(recaptchaContainer.value, {
       sitekey: SITE_KEY,
@@ -116,28 +110,30 @@ function renderRecaptcha() {
       'expired-callback': onRecaptchaExpired,
     });
   }
-}
+};
+
 
 const submitForm = async () => {
   if (!recaptchaToken.value) {
-    notyf.error('Please verify that you are not a robot.');
+    notyf.error('Please verify the reCAPTCHA.');
     return;
   }
 
   isLoading.value = true;
 
   try {
+    const payload = {
+      access_key: WEB3FORMS_ACCESS_KEY,
+      name: name.value,
+      email: email.value,
+      message: message.value,
+      recaptcha_response: recaptchaToken.value, // Exact field required by Web3Forms
+    };
+
     const response = await fetch("https://api.web3forms.com/submit", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        access_key: WEB3FORMS_ACCESS_KEY,
-        name: name.value,
-        email: email.value,
-        message: message.value,
-       
-        recaptcha_response: recaptchaToken.value 
-      })
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(payload)
     });
 
     const result = await response.json();
@@ -145,44 +141,36 @@ const submitForm = async () => {
     if (result.success) {
       notyf.success("Message Sent!");
       
-      // Clear data
-      name.value = "";
-      email.value = "";
-      message.value = "";
+      // Clear Form
+      name.value = ""; email.value = ""; message.value = "";
       resetRecaptcha();
 
-    
+      // Show Modal
       await nextTick();
-
-      // Trigger Modal
       if (window.bootstrap) {
         const modal = new window.bootstrap.Modal(successModalRef.value);
         modal.show();
-      } else {
-        console.error("Bootstrap JS not found. Modal couldn't open.");
       }
     } else {
-      // Show exact error message from API
-      notyf.error(result.message || "Form submission failed.");
+      console.error("Web3Forms Error:", result);
+      notyf.error(result.message || "Submission failed.");
     }
   } catch (e) {
-    notyf.error("An error occurred. Check your internet connection.");
-    console.error("Submission error:", e);
+    console.error("Fetch Error:", e);
+    notyf.error("Connection error. Please try again.");
   } finally {
     isLoading.value = false;
   }
 };
 
 onMounted(() => {
-  const interval = setInterval(() => {
+  const checkGrecaptcha = setInterval(() => {
     if (window.grecaptcha && window.grecaptcha.render) {
       renderRecaptcha();
-      clearInterval(interval);
+      clearInterval(checkGrecaptcha);
     }
-  }, 100);
+  }, 500);
 
-  onBeforeUnmount(() => {
-    clearInterval(interval);
-  });
+  onBeforeUnmount(() => clearInterval(checkGrecaptcha));
 });
 </script>
