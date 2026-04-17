@@ -1,46 +1,82 @@
 <template>
   <section id="contact" class="section-contact">
-    <div class="container-fluid p-0">
+    <div class="container-fluid p-0"> 
       <div class="row g-0 min-vh-100">
-        <div class="col-md-6">
-          <div class="ratio ratio-16x9 h-100">
+
+        <!-- MAP -->
+        <div id="image" class="col-md-6 mb-4 mb-md-0">
+          <div class="ratio ratio-16x9 mb-3">
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d15444.02!2d121.05!3d14.58!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sph!4v1713360000000" 
-              style="border:0;" allowfullscreen="" loading="lazy">
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d61775.9165503935!2d120.9382832050179!3d14.599372899314908!2m3!1f0!2f0!3f0!2m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397ca03571ec38b%3A0x69d1d5751069c11f!2sManila%2C%20Metro%20Manila!5e0!3m2!1sen!2sph"
+              width="600"
+              height="450"
+              allowfullscreen
+              loading="lazy">
             </iframe>
           </div>
         </div>
 
-        <div class="col-lg-6 p-4 d-flex align-items-center">
-          <div class="w-100" style="max-width: 500px; margin: 0 auto;">
-            <h3 class="mb-4">CONTACT US</h3>
-            <form @submit.prevent="submitForm">
-              <div class="mb-3">
-                <label class="form-label">Name</label>
-                <input type="text" class="form-control" v-model="name" required>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Email Address</label>
-                <input type="email" class="form-control" v-model="email" required>
-              </div>
-              <div class="mb-4">
-                <label class="form-label">Message</label>
-                <textarea class="form-control" rows="5" v-model="message" required></textarea>
-              </div>
+        <!-- FORM -->
+        <div class="col-lg-6 shadow-md">
+          <div class="border rounded shadow-sm p-4 h-100">
+            <h3 id="contact-title">CONTACT US</h3>
 
-              <div class="mb-3 d-flex justify-content-center">
-                <div ref="recaptchaContainer"></div>
-              </div>
+            <div class="contact-form-wrapper mx-auto">
+              <form @submit.prevent="submitForm">
 
-              <button type="submit" class="btn btn-primary w-100" :disabled="isLoading">
-                {{ isLoading ? "Sending..." : "Send Message" }}
-              </button>
-            </form>
-          </div>
+                <div class="mb-3">
+                  <label class="form-label">Name</label>
+                  <input type="text" class="form-control" v-model="name" required>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" class="form-control" v-model="email" required>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label">Message</label>
+                  <textarea class="form-control" rows="5" v-model="message" required></textarea>
+                </div>
+
+                <!-- ✅ FIXED BUTTON -->
+                <button type="submit" class="btn custom-btn" :disabled="isLoading">
+                  {{ isLoading ? "Sending..." : "Submit" }}
+                </button>
+
+                <!-- CAPTCHA -->
+                <div class="d-flex justify-content-end mt-3">
+                  <div ref="recaptchaContainer"></div>
+                </div>
+
+              </form>
+            </div> 
+          </div> 
+        </div> 
+
+      </div> 
+    </div> 
+  </section>
+
+  <!-- SUCCESS MODAL -->
+  <div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center p-4">
+        <div class="modal-body">
+          <h4 class="mb-3">Message Sent</h4>
+          <p class="text-muted">
+            Your message has been successfully sent.
+          </p>
+          <button
+            type="button"
+            class="btn custom-btn mt-3"
+            data-bs-dismiss="modal">
+            OK
+          </button>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script setup>
@@ -50,81 +86,108 @@ import 'notyf/notyf.min.css';
 
 const notyf = new Notyf();
 
-// State
+const WEB3FORMS_ACCESS_KEY = "b178b093-4dff-4529-a71c-25f184b6ecc3";
+const SITE_KEY = '6LdaOrwsAAAAANJuzslgfdRy9n7P1bqQZxKtkiHh';
+
 const name = ref("");
 const email = ref("");
 const message = ref("");
 const isLoading = ref(false);
 
-// reCAPTCHA Logic
-const SITE_KEY = '6LdaOrwsAAAAANJuzslgfdRy9n7P1bqQZxKtkiHh'; 
 const recaptchaContainer = ref(null);
 const recaptchaWidgetId = ref(null);
 const recaptchaToken = ref('');
 
-const WEB3FORMS_ACCESS_KEY = "b178b093-4dff-4529-a71c-25f184b6ecc3";
+// CAPTCHA CALLBACKS
+function onRecaptchaSuccess(token) {
+  recaptchaToken.value = token;
+}
 
-const onRecaptchaSuccess = (token) => { recaptchaToken.value = token; };
-const onRecaptchaExpired = () => { recaptchaToken.value = ''; };
+function onRecaptchaExpired() {
+  recaptchaToken.value = '';
+}
 
-const renderRecaptcha = () => {
-  if (window.grecaptcha && window.grecaptcha.render && recaptchaContainer.value) {
-    try {
-      recaptchaWidgetId.value = window.grecaptcha.render(recaptchaContainer.value, {
-        sitekey: SITE_KEY,
-        callback: onRecaptchaSuccess,
-        'expired-callback': onRecaptchaExpired,
-      });
-    } catch (e) {
-      console.error("reCAPTCHA render error:", e);
-    }
+// RENDER CAPTCHA
+function renderRecaptcha() {
+  if (!window.grecaptcha) return;
+
+  recaptchaWidgetId.value = window.grecaptcha.render(recaptchaContainer.value, {
+    sitekey: SITE_KEY,
+    callback: onRecaptchaSuccess,
+    'expired-callback': onRecaptchaExpired,
+  });
+}
+
+// RESET CAPTCHA
+function resetRecaptcha() {
+  if (recaptchaWidgetId.value !== null) {
+    window.grecaptcha.reset(recaptchaWidgetId.value);
+    recaptchaToken.value = '';
   }
-};
+}
 
+// SUBMIT FORM
 const submitForm = async () => {
   if (!recaptchaToken.value) {
-    notyf.error("Please verify the reCAPTCHA.");
+    notyf.error('Please verify that you are not a robot.');
     return;
   }
 
   isLoading.value = true;
+
   try {
     const response = await fetch("https://api.web3forms.com/submit", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         access_key: WEB3FORMS_ACCESS_KEY,
+        subject: "New message from Portfolio",
         name: name.value,
         email: email.value,
         message: message.value,
-        recaptcha_response: recaptchaToken.value
+        "g-recaptcha-response": recaptchaToken.value
       })
     });
 
     const result = await response.json();
+
     if (result.success) {
-      notyf.success("Message sent successfully!");
-      name.value = ""; email.value = ""; message.value = "";
-      if (window.grecaptcha) window.grecaptcha.reset(recaptchaWidgetId.value);
-      recaptchaToken.value = "";
+      notyf.success("Message Sent!");
+
+      // SHOW MODAL
+      const modal = new bootstrap.Modal(document.getElementById('successModal'));
+      modal.show();
+
+      // RESET FORM
+      name.value = "";
+      email.value = "";
+      message.value = "";
+      resetRecaptcha();
     } else {
-      notyf.error(result.message || "Failed to send.");
+      notyf.error("Something went wrong.");
     }
-  } catch (e) {
-    notyf.error("Connection error.");
+
+  } catch (error) {
+    console.error(error);
+    notyf.error("Failed to send message.");
   } finally {
     isLoading.value = false;
   }
 };
 
+// LOAD CAPTCHA
 onMounted(() => {
-  const checkGrecaptcha = setInterval(() => {
+  const interval = setInterval(() => {
     if (window.grecaptcha && window.grecaptcha.render) {
       renderRecaptcha();
-      clearInterval(checkGrecaptcha);
+      clearInterval(interval);
     }
-  }, 500);
+  }, 100);
 
-  onBeforeUnmount(() => clearInterval(checkGrecaptcha));
+  onBeforeUnmount(() => {
+    clearInterval(interval);
+  });
 });
 </script>
