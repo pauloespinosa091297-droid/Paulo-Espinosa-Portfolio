@@ -39,7 +39,7 @@
                   <textarea class="form-control" rows="5" v-model="message" required></textarea>
                 </div>
 
-                <!-- ✅ FIXED BUTTON -->
+            
                 <button type="submit" class="btn custom-btn" :disabled="isLoading">
                   {{ isLoading ? "Sending..." : "Submit" }}
                 </button>
@@ -86,8 +86,8 @@ import 'notyf/notyf.min.css';
 
 const notyf = new Notyf();
 
-const WEB3FORMS_ACCESS_KEY = "b178b093-4dff-4529-a71c-25f184b6ecc3";
-const SITE_KEY = '6LdaOrwsAAAAANJuzslgfdRy9n7P1bqQZxKtkiHh';
+const WEB3FORMS_ACCESS_KEY = "5ba601de-6da4-4b8b-81cd-7865d1fd1006";
+const SITE_KEY = '6LckWLwsAAAAAOQJrVKsT7vfZmLnww9JzR9xk2q9';
 
 const name = ref("");
 const email = ref("");
@@ -156,11 +156,11 @@ const submitForm = async () => {
     if (result.success) {
       notyf.success("Message Sent!");
 
-      // SHOW MODAL
+     
       const modal = new bootstrap.Modal(document.getElementById('successModal'));
       modal.show();
 
-      // RESET FORM
+    
       name.value = "";
       email.value = "";
       message.value = "";
@@ -177,7 +177,7 @@ const submitForm = async () => {
   }
 };
 
-// LOAD CAPTCHA
+
 onMounted(() => {
   const interval = setInterval(() => {
     if (window.grecaptcha && window.grecaptcha.render) {
