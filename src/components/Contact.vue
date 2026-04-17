@@ -70,14 +70,14 @@
         Your message has been successfully sent.
       </div>
       <div class="modal-footer">
-        <button
-        type="button"
-        class="btn custom-btn"
-        data-bs-dismiss="modal"
-        onclick="openThankYouModal()"
-        >
-        OK
-      </button>
+     <button
+       type="button"
+       class="btn custom-btn"
+       data-bs-dismiss="modal"
+       @click="openThankYouModal"
+     >
+       OK
+     </button>
     </div>
   </div>
 </div>
@@ -105,122 +105,126 @@
 </template>
 
 <script setup>
-    import { ref, onMounted, onBeforeUnmount } from 'vue';
-    import { Notyf } from 'notyf';
-    import 'notyf/notyf.min.css';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css';
+import * as bootstrap from 'bootstrap';
 
-    const notyf = new Notyf();
+const notyf = new Notyf();
 
-    const WEB3FORMS_ACCESS_KEY = "5ba601de-6da4-4b8b-81cd-7865d1fd1006";
+const WEB3FORMS_ACCESS_KEY = "5ba601de-6da4-4b8b-81cd-7865d1fd1006";
+const subject = "New message from Portfolio Contact Form";
 
-    const subject = "New message from Portfolio Contact Form";
+const name = ref("");
+const email = ref("");
+const message = ref("");
+const isLoading = ref(false);
 
-    const name = ref("");
-    const email = ref("");
-    const message = ref("");
-    const isLoading = ref(false);
-    const submitForm = async() => {
+const submitForm = async () => {
 
-        // Check if reCAPTCHA token is present, return an error when not verified.
-        if (!recaptchaToken.value) {
-            notyf.error('Please verify that you are not a robot.');
-            return;
-        }
+    if (!recaptchaToken.value) {
+        notyf.error('Please verify that you are not a robot.');
+        return;
+    }
 
-        isLoading.value = true;
+    isLoading.value = true;
 
-        try {
-
-            const response = await fetch("https://api.web3forms.com/submit", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    access_key: WEB3FORMS_ACCESS_KEY,
-                    subject: subject,
-                    name: name.value,
-                    email: email.value,
-                    message: message.value
-                })
+    try {
+        const response = await fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                access_key: WEB3FORMS_ACCESS_KEY,
+                subject: subject,
+                name: name.value,
+                email: email.value,
+                message: message.value
             })
+        });
 
-            const result = await response.json();
+        const result = await response.json();
 
-         if(result.success) {
-             notyf.success("Message Sent!");
+        if (result.success) {
+            notyf.success("Message Sent!");
 
-             
-             name.value = "";
-             email.value = "";
-             message.value = "";
+            name.value = "";
+            email.value = "";
+            message.value = "";
+      
+            resetRecaptcha();
 
-            
-             resetRecaptcha();
-         }
-
-        } catch(e) {
-            console.log(e);
+          
             isLoading.value = false;
-            notyf.error("Failed to send a message. Please try again.")
+
+       
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
         }
+
+    } catch (e) {
+        console.log(e);
+        isLoading.value = false;
+        notyf.error("Failed to send a message. Please try again.");
     }
+};
 
-    const SITE_KEY = '6LckWLwsAAAAAOQJrVKsT7vfZmLnww9JzR9xk2q9';  // Replace with your site key
 
-    const recaptchaContainer = ref(null);
-    const recaptchaWidgetId = ref(null);
-    const recaptchaToken = ref('');
+function openThankYouModal() {
+    const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
+    thankYouModal.show();
+}
 
-    // Callback called by reCAPTCHA when successful
-    function onRecaptchaSuccess(token) {
-      recaptchaToken.value = token;
-    }
+// =======================
+// RECAPTCHA
+// =======================
 
-    // Callback when expired
-    function onRecaptchaExpired() {
-      recaptchaToken.value = '';
-    }
+const SITE_KEY = '6LckWLwsAAAAAOQJrVKsT7vfZmLnww9JzR9xk2q9';
 
-    // Function to render the reCAPTCHA widget
-    function renderRecaptcha() {
-      if (!window.grecaptcha) {
+const recaptchaContainer = ref(null);
+const recaptchaWidgetId = ref(null);
+const recaptchaToken = ref('');
+
+function onRecaptchaSuccess(token) {
+    recaptchaToken.value = token;
+}
+
+function onRecaptchaExpired() {
+    recaptchaToken.value = '';
+}
+
+function renderRecaptcha() {
+    if (!window.grecaptcha) {
         console.error('reCAPTCHA not loaded');
         return;
-      }
+    }
 
-      recaptchaWidgetId.value = window.grecaptcha.render(recaptchaContainer.value, {
+    recaptchaWidgetId.value = window.grecaptcha.render(recaptchaContainer.value, {
         sitekey: SITE_KEY,
-        size: 'normal', // or 'compact'
+        size: 'normal',
         callback: onRecaptchaSuccess,
         'expired-callback': onRecaptchaExpired,
-      });
-    }
+    });
+}
 
-    // Function to reset reCAPTCHA 
-    function resetRecaptcha() {
-      if (recaptchaWidgetId.value !== null) {
+function resetRecaptcha() {
+    if (recaptchaWidgetId.value !== null) {
         window.grecaptcha.reset(recaptchaWidgetId.value);
         recaptchaToken.value = '';
-      }
     }
+}
 
-
-
-    onMounted(() => {
-      // This code waits for the Google reCAPTCHA library to load, then renders the reCAPTCHA widget using onMounted hook. 
-      // The widget is rendered with grecaptcha.render(), which requires a sitekey. 
-      // Callback functions handle success and expiration events. 
-      // reCAPTCHA is reset upon form submission to clear the token.
-      const interval = setInterval(() => {
+onMounted(() => {
+    const interval = setInterval(() => {
         if (window.grecaptcha && window.grecaptcha.render) {
-          renderRecaptcha();
-          clearInterval(interval);
+            renderRecaptcha();
+            clearInterval(interval);
         }
-      }, 100);
+    }, 100);
 
-      onBeforeUnmount(() => {
+    onBeforeUnmount(() => {
         clearInterval(interval);
-      });
     });
+});
 </script>
