@@ -1,0 +1,228 @@
+/* Navbar */
+#navbar {
+  background-color: transparent;
+  position: fixed; /* must be fixed */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: url(/images/projectbg.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+#logo {
+  font-family: Montserrat;
+  font-weight: 900;
+  color: #003363;
+}
+
+
+/* Navbar text */
+nav a {
+  font-family: Montserrat;
+  font-weight: 700;
+  color: #003363 !important;
+}
+/* Navbar ends here */
+
+
+/* Landing */
+#landing {
+  background: 
+  linear-gradient( 
+    rgba(0, 34, 65, 0.61), 
+    rgba(0, 34, 65, 0.61)
+  ),url(images/landing.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+#myname {
+  font-family: Montserrat;
+  font-weight: 900;
+  color: #FFFFFF;
+}
+
+#description {
+  font-family: Montserrat;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #FFFFFF 
+}
+
+#profile h5 {
+  font-family: Montserrat;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: #FFFFFF;
+}
+
+ #base1, #base2, .btn {
+  border-radius: 150px;
+  background: #12C6FF;
+
+  font-family: Montserrat;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #FFFFFF;
+ }
+
+#profile .btn.btn-primary {
+  background: #12C6FF;
+  border: none;
+}
+
+/* Landing ends here */
+
+/* Projects CSS here */
+.pagetitle {
+  font-family: Montserrat;
+  font-weight: 900;
+  color: #003363;
+ }
+
+/* Card */
+ .card {
+  background: url(/images/projectbg.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+ }
+
+ div p {
+  font-family: Montserrat;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #003363
+ }
+
+ .card-title {
+  font-family: Montserrat;
+  font-weight: 700;
+  font-size: 25px;
+  line-height: 24px;
+  color: #003363
+ }
+
+ .card-img-top {
+   height: 200px; /* same for all cards */
+   object-fit: cover;
+ }
+
+/* Projects CSS ends */
+
+
+ /*Contact CSS*/
+ #contact {
+  background: url(/images/projectbg.png); 
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-family: Montserrat;
+ }
+ 
+ #contact-title {
+  font-family: Montserrat;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 25px;
+  color: #003363;
+ }
+
+ #message-txt{
+ font-family: Montserrat;
+ font-weight: 600;
+ font-style: SemiBold;
+ font-size: 20px;
+ color: #003363;
+}
+
+.map-iframe {
+  border: 0;
+}
+
+/* Project CSS ends */
+
+/* Prefooter CSS */
+#pre-footer .pre-footer-col img {
+  width: 50px;       /* same width for all */
+  height: 50px;      /* same height for all */
+  object-fit: contain; /* maintain original aspect ratio */
+  display: block;     /* make margin work */
+  margin: 0 auto;     /* center in the column */
+}
+
+
+#pre-footer .pre-footer-col {
+  transition: background-color 0.3s ease;
+  font-weight: 600;
+  background: #003363;
+}
+
+#pre-footer .pre-footer-col:hover {
+  background-color: #12C6FF;
+  cursor: pointer;
+  transform: translate(2px);
+}
+
+#pre-footer .pre-footer-col img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain; /* maintain original aspect ratio */
+  display: block;
+  margin: 0 auto; /* center */
+}
+/* Pre-footer ends here */
+
+
+/* Footer CSS */
+#footer {
+ background: url(/images/projectbg.png); 
+ font-family: Montserrat;
+ font-weight: 400;
+ color: #003363;
+}
+
+/* ===== For All Button ===== */
+.custom-btn {
+  background-color: #12C6FF !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 150px;
+  padding: 8px 24px;
+  font-family: Montserrat;
+  font-weight: 500;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.custom-btn:hover {
+  background-color: #003363 !important;
+  color: #fff !important;
+}
+
+.custom-btn:focus,
+.custom-btn:active {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+ .card .btn {
+   background: #12C6FF;
+   color: #fff;
+   border: none;
+ }
+
+ .card .btn:hover {
+   background: #003363; /* slightly darker shade for hover */
+   color: #fff;
+ }
