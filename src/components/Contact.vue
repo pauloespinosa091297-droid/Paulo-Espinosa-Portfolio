@@ -69,16 +69,7 @@
       <div class="modal-body">
         Your message has been successfully sent.
       </div>
-      <div class="modal-footer">
-     <button
-       type="button"
-       class="btn custom-btn"
-       data-bs-dismiss="modal"
-       @click="openThankYouModal"
-     >
-       OK
-     </button>
-    </div>
+
   </div>
 </div>
 </div>
@@ -170,11 +161,6 @@ const submitForm = async () => {
     }
 };
 
-
-function openThankYouModal() {
-    const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
-    thankYouModal.show();
-}
 
 // =======================
 // RECAPTCHA
