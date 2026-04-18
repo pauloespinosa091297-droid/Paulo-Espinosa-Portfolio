@@ -59,36 +59,13 @@
 </div> 
 </section>
 
-<div class="modal fade" id="successModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Message Sent</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        Your message has been successfully sent.
-      </div>
-      <div class="modal-footer">
-          <button 
-            type="button" 
-            class="btn btn-primary" 
-            data-bs-dismiss="modal">
-            OK
-          </button>
-        </div>
-
-  </div>
-</div>
-</div>
-
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
-import * as bootstrap from 'bootstrap';
+
 
 const notyf = new Notyf();
 
@@ -139,8 +116,6 @@ const submitForm = async () => {
             isLoading.value = false;
 
        
-            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-            successModal.show();
         }
 
     } catch (e) {
