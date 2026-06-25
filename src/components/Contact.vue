@@ -1,73 +1,93 @@
 <template>
-  <div id="contact" class="py-5 min-vh-50 d-flex align-items-center">
-    <div class="container m-auto" style="max-width: 600px;">
+  <div id="contact" class="py-5 min-vh-100 d-flex align-items-center">
+    <div class="container m-auto">
       
       <div class="text-center mb-5">
         <h2 class="text-light font-montserrat mb-2">Get In Touch</h2>
         <div class="accent-line mx-auto"></div>
       </div>
-      
-      <form @submit.prevent="handleSubmit" class="contact-form d-flex flex-column gap-4">
-        
-        <div class="form-group">
-          <label for="name" class="text-light small text-uppercase tracking-wider mb-2 d-block">Name</label>
-          <input 
-            type="text" 
-            id="name" 
-            v-model="formFields.name" 
-            class="form-control custom-input" 
-            placeholder="Your Name" 
-            required
-          >
+
+      <div class="row g-5 align-items-stretch">
+        <div class="col-lg-6 col-md-12 d-flex flex-column justify-content-between">
+          <div class="map-wrapper w-100 h-100 mb-4 mb-lg-0">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d123652.82583561334!2d120.9168434!3d14.4113337!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397d26df5767b4f%3A0xe6ec8b488661efc8!2sBacoor%2C%20Cavite!5e0!3m2!1sen!2sph!4v1710000000000!5m2!1sen!2sph" 
+              class="w-100 h-100 border-0 rounded-3" 
+              allowfullscreen="" 
+              loading="lazy" 
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="email" class="text-light small text-uppercase tracking-wider mb-2 d-block">Email Address</label>
-          <input 
-            type="email" 
-            id="email" 
-            v-model="formFields.email" 
-            class="form-control custom-input" 
-            placeholder="your.email@example.com" 
-            required
-          >
-        </div>
+        <div class="col-lg-6 col-md-12">
+          <form @submit.prevent="submitForm" class="contact-form d-flex flex-column gap-4">
+            
+            <div class="form-group">
+              <label for="name" class="text-light small text-uppercase tracking-wider mb-2 d-block">Name</label>
+              <input 
+                type="text" 
+                id="name" 
+                v-model="name" 
+                class="form-control custom-input" 
+                placeholder="Your Name" 
+                required
+              >
+            </div>
 
-        <div class="form-group">
-          <label for="message" class="text-light small text-uppercase tracking-wider mb-2 d-block">Message</label>
-          <textarea 
-            id="message" 
-            v-model="formFields.message" 
-            rows="5" 
-            class="form-control custom-input" 
-            placeholder="Type your message here..." 
-            required
-          ></textarea>
-        </div>
+            <div class="form-group">
+              <label for="email" class="text-light small text-uppercase tracking-wider mb-2 d-block">Email Address</label>
+              <input 
+                type="email" 
+                id="email" 
+                v-model="email" 
+                class="form-control custom-input" 
+                placeholder="your.email@example.com" 
+                required
+              >
+            </div>
 
-        <button 
-          type="submit" 
-          class="btn submit-cta-btn mt-2" 
-          :disabled="sendingState"
-        >
-          {{ sendingState ? 'Sending...' : 'Send Message' }}
-        </button>
-      </form>
+            <div class="form-group">
+              <label for="message" class="text-light small text-uppercase tracking-wider mb-2 d-block">Message</label>
+              <textarea 
+                id="message" 
+                v-model="message" 
+                rows="5" 
+                class="form-control custom-input" 
+                placeholder="Type your message here..." 
+                required
+              ></textarea>
+            </div>
 
-      <div class="social-links-footer text-center mt-5">
-        <div class="d-flex justify-content-center gap-3">
-          <a href="https://github.com/pauloespinosa091297-droid" target="_blank" rel="noopener noreferrer" class="social-icon-circle" aria-label="GitHub">
-            <i class="fab fa-github"></i>
-          </a>
-          <a href="#" class="social-icon-circle" aria-label="Facebook">
-            <i class="fab fa-facebook-f"></i>
-          </a>
-          <a href="#" class="social-icon-circle" aria-label="Instagram">
-            <i class="fab fa-instagram"></i>
-          </a>
-          <a href="#" class="social-icon-circle" aria-label="LinkedIn">
-            <i class="fab fa-linkedin-in"></i>
-          </a>
+            <div class="recaptcha-wrapper my-2">
+              <div ref="recaptchaContainer"></div>
+            </div>
+
+            <button 
+              type="submit" 
+              class="btn submit-cta-btn" 
+              :disabled="isLoading"
+            >
+              {{ isLoading ? 'Sending...' : 'Send Message' }}
+            </button>
+          </form>
+
+          <div class="social-links-footer text-center mt-5">
+            <div class="d-flex justify-content-center gap-3">
+              <a href="https://github.com/pauloespinosa091297-droid" target="_blank" rel="noopener noreferrer" class="social-icon-circle" aria-label="GitHub">
+                <i class="fab fa-github"></i>
+              </a>
+              <a href="#" class="social-icon-circle" aria-label="Facebook">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a href="#" class="social-icon-circle" aria-label="Instagram">
+                <i class="fab fa-instagram"></i>
+              </a>
+              <a href="#" class="social-icon-circle" aria-label="LinkedIn">
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -76,59 +96,119 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css';
 
-// Unified Object Model preventing single item reading crashes
-const formFields = ref({
-  name: '',
-  email: '',
-  message: ''
-});
+const notyf = new Notyf();
 
-const sendingState = ref(false);
+const WEB3FORMS_ACCESS_KEY = "5ba601de-6da4-4b8b-81cd-7865d1fd1006";
+const subject = "New message from Portfolio Contact Form";
 
-const handleSubmit = async () => {
-  sendingState.value = true;
-  
-  try {
-    const response = await fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        // Put your valid active Web3Forms Access Key right here
-        access_key: "5ba601de-6da4-4b8b-81cd-7865d1fd1006",
-        name: formFields.value.name,
-        email: formFields.value.email,
-        message: formFields.value.message
-      })
-    });
+const name = ref("");
+const email = ref("");
+const message = ref("");
+const isLoading = ref(false);
 
-    const data = await response.json();
-
-    if (response.status === 200 || data.success) {
-      alert('Message sent successfully!');
-    } else {
-      console.error('Server Side Return Error Payload:', data);
-      alert(`Submission failed: ${data.message || 'Check your access key token verification'}`);
+const submitForm = async () => {
+    if (!recaptchaToken.value) {
+        notyf.error('Please verify that you are not a robot.');
+        return;
     }
 
-  } catch (error) {
-    console.error('Client side compilation execution failure:', error);
-    alert('A connection runtime error occurred. Please check your network connection.');
-  } finally {
-    // CRITICAL FIX: Executing layout cleanup inside finally blocks guarantees
-    // the text inputs reset even if the server returns a 400 or 500 error!
-    formFields.value = {
-      name: '',
-      email: '',
-      message: ''
-    };
-    sendingState.value = false;
-  }
+    isLoading.value = true;
+
+    try {
+        const response = await fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                access_key: WEB3FORMS_ACCESS_KEY,
+                subject: subject,
+                name: name.value,
+                email: email.value,
+                message: message.value
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            notyf.success("Message Sent!");
+
+            // Successfully clear inputs out on strict confirmation
+            name.value = "";
+            email.value = "";
+            message.value = "";
+            
+            resetRecaptcha();
+        } else {
+            // FIXED: Gracefully handles Web3Forms payload rejections without breaking script logic
+            console.error("Web3Forms validation rejection payload:", result);
+            notyf.error(`Submission failed: ${result.message || 'Check your inputs.'}`);
+        }
+
+    } catch (e) {
+        console.error("Network interface runtime error:", e);
+        notyf.error("Failed to send a message. Please try again.");
+    } finally {
+        // FIXED: This blocks unlocks your CTA spinner state no matter what the API returns!
+        isLoading.value = false;
+    }
 };
+
+// ==========================================
+// GOOGLE RECAPTCHA ROUTINES
+// ==========================================
+const SITE_KEY = '6LckWLwsAAAAAOQJrVKsT7vfZmLnww9JzR9xk2q9';
+
+const recaptchaContainer = ref(null);
+const recaptchaWidgetId = ref(null);
+const recaptchaToken = ref('');
+
+function onRecaptchaSuccess(token) {
+    recaptchaToken.value = token;
+}
+
+function onRecaptchaExpired() {
+    recaptchaToken.value = '';
+}
+
+function renderRecaptcha() {
+    if (!window.grecaptcha) {
+        console.error('reCAPTCHA not loaded');
+        return;
+    }
+
+    recaptchaWidgetId.value = window.grecaptcha.render(recaptchaContainer.value, {
+        sitekey: SITE_KEY,
+        size: 'normal',
+        callback: onRecaptchaSuccess,
+        'expired-callback': onRecaptchaExpired,
+    });
+}
+
+function resetRecaptcha() {
+    if (recaptchaWidgetId.value !== null) {
+        window.grecaptcha.reset(recaptchaWidgetId.value);
+        recaptchaToken.value = '';
+    }
+}
+
+onMounted(() => {
+    const interval = setInterval(() => {
+        if (window.grecaptcha && window.grecaptcha.render) {
+            renderRecaptcha();
+            clearInterval(interval);
+        }
+    }, 100);
+
+    onBeforeUnmount(() => {
+        clearInterval(interval);
+    });
+});
 </script>
 
 <style scoped>
@@ -150,7 +230,22 @@ const handleSubmit = async () => {
 }
 
 /* ==========================================================================
-   2. INPUT SHELLS STYLE CONTROLLERS
+   2. MAP WRAPPER ELEMENT CONFIGURATIONS
+   ========================================================================== */
+.map-wrapper {
+  min-height: 400px;
+  border: 1px solid rgba(95, 149, 152, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.map-wrapper iframe {
+  filter: grayscale(100%) invert(92%) contrast(83%); /* Optional dark theme match styling */
+}
+
+/* ==========================================================================
+   3. INPUT SHELLS STYLE CONTROLLERS
    ========================================================================== */
 .custom-input {
   background-color: #061E29 !important;
@@ -172,7 +267,7 @@ const handleSubmit = async () => {
 }
 
 /* ==========================================================================
-   3. SUBMIT ACTION BUTTON ENGINE
+   4. SUBMIT ACTION BUTTON ENGINE
    ========================================================================== */
 .submit-cta-btn {
   font-family: 'Montserrat', sans-serif !important;
@@ -191,7 +286,7 @@ const handleSubmit = async () => {
 
 .submit-cta-btn:hover:not(:disabled) {
   background-color: var(--brand-secondary, #5f9598) !important;
-  color: #030f14 !important; /* Matches --bg-dark */
+  color: #030f14 !important;
   box-shadow: 0 6px 18px rgba(95, 149, 152, 0.3) !important;
   transform: translateY(-2px);
 }
@@ -202,7 +297,7 @@ const handleSubmit = async () => {
 }
 
 /* ==========================================================================
-   4. ICON NAVIGATION ELEMENT WRAPPERS
+   5. ICON NAVIGATION ELEMENT WRAPPERS
    ========================================================================== */
 .social-icon-circle {
   display: flex;
