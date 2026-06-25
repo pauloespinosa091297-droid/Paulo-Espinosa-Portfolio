@@ -1,98 +1,78 @@
 <template>
-  <div id="contact" class="py-5 min-vh-100 d-flex align-items-center">
-    <div class="container m-auto">
+  <section id="contact" class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-5 section-title">Get In Touch</h2>
       
-      <div class="text-center mb-5">
-        <h2 class="text-light font-montserrat mb-2">Get In Touch</h2>
-        <div class="accent-line mx-auto"></div>
+      <div class="social-links-container d-flex justify-content-center align-items-center mb-5">
+        <a href="https://github.com/pauloespinosa" target="_blank" class="social-link" title="GitHub">
+          <img src="/images/github.png" class="social-icon" alt="GitHub">
+        </a> 
+        <a href="https://www.facebook.com/paulo.espinosa.12" target="_blank" class="social-link" title="Facebook">
+          <img src="/images/facebook.png" class="social-icon" alt="Facebook">
+        </a> 
+        <a href="https://www.instagram.com/plspns/" target="_blank" class="social-link" title="Instagram">
+          <img src="/images/instagram.png" class="social-icon" alt="Instagram">
+        </a> 
+        <a href="https://www.linkedin.com/in/paulo-espinosa-1232ab24a/" target="_blank" class="social-link" title="LinkedIn">
+          <img src="/images/linkedin.png" class="social-icon" alt="LinkedIn">
+        </a>
       </div>
 
-      <div class="row g-5 align-items-stretch">
-        <div class="col-lg-6 col-md-12 d-flex flex-column justify-content-between">
-          <div class="map-wrapper w-100 h-100 mb-4 mb-lg-0">
+      <div class="row g-4 align-items-stretch">
+        
+        <div id="image" class="col-md-6">
+          <div class="map-wrapper h-100 rounded overflow-hidden">
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d123652.82583561334!2d120.9168434!3d14.4113337!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397d26df5767b4f%3A0xe6ec8b488661efc8!2sBacoor%2C%20Cavite!5e0!3m2!1sen!2sph!4v1710000000000!5m2!1sen!2sph" 
-              class="w-100 h-100 border-0 rounded-3" 
+              src="https://maps.google.com/maps?q=Manila,Philippines&t=m&z=12&output=embed&iwloc=near" 
+              width="100%" 
+              height="100%" 
+              style="border:0; filter: invert(90%) hue-rotate(180deg) brightness(85%) contrast(95%);" 
               allowfullscreen="" 
               loading="lazy" 
-              referrerpolicy="no-referrer-when-downgrade"
-            ></iframe>
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
           </div>
         </div>
 
-        <div class="col-lg-6 col-md-12">
-          <form @submit.prevent="submitForm" class="contact-form d-flex flex-column gap-4">
-            
-            <div class="form-group">
-              <label for="name" class="text-light small text-uppercase tracking-wider mb-2 d-block">Name</label>
-              <input 
-                type="text" 
-                id="name" 
-                v-model="name" 
-                class="form-control custom-input" 
-                placeholder="Your Name" 
-                required
-              >
-            </div>
+        <div class="col-md-6">
+          <div class="form-card-wrapper p-4 h-100">
+            <h4 id="contact-title" class="mb-3 tracking-wide text-light">CONTACT ME</h4>
 
-            <div class="form-group">
-              <label for="email" class="text-light small text-uppercase tracking-wider mb-2 d-block">Email Address</label>
-              <input 
-                type="email" 
-                id="email" 
-                v-model="email" 
-                class="form-control custom-input" 
-                placeholder="your.email@example.com" 
-                required
-              >
-            </div>
+            <form @submit.prevent="submitForm">
+              <div class="mb-3">
+                <label class="form-label text-light opacity-75">Name</label>
+                <input type="text" class="form-control input-custom" placeholder="Full name" v-model="name" required>
+              </div>
 
-            <div class="form-group">
-              <label for="message" class="text-light small text-uppercase tracking-wider mb-2 d-block">Message</label>
-              <textarea 
-                id="message" 
-                v-model="message" 
-                rows="5" 
-                class="form-control custom-input" 
-                placeholder="Type your message here..." 
-                required
-              ></textarea>
-            </div>
+              <div class="mb-3">
+                <label class="form-label text-light opacity-75">Employer / Company Name</label>
+                <input type="text" class="form-control input-custom" placeholder="Company or Organization name" v-model="companyName">
+              </div>
 
-            <div class="recaptcha-wrapper my-2">
-              <div ref="recaptchaContainer"></div>
-            </div>
+              <div class="mb-3">
+                <label class="form-label text-light opacity-75">Email Address</label>
+                <input type="email" class="form-control input-custom" placeholder="Email" v-model="email" required>
+              </div>
 
-            <button 
-              type="submit" 
-              class="btn submit-cta-btn" 
-              :disabled="isLoading"
-            >
-              {{ isLoading ? 'Sending...' : 'Send Message' }}
-            </button>
-          </form>
+              <div class="mb-4">
+                <label class="form-label text-light opacity-75">Message</label>
+                <textarea class="form-control input-custom" rows="4" placeholder="Your message here..." v-model="message" required></textarea>
+              </div>
 
-          <div class="social-links-footer text-center mt-5">
-            <div class="d-flex justify-content-center gap-3">
-              <a href="https://github.com/pauloespinosa091297-droid" target="_blank" rel="noopener noreferrer" class="social-icon-circle" aria-label="GitHub">
-                <i class="fab fa-github"></i>
-              </a>
-              <a href="#" class="social-icon-circle" aria-label="Facebook">
-                <i class="fab fa-facebook-f"></i>
-              </a>
-              <a href="#" class="social-icon-circle" aria-label="Instagram">
-                <i class="fab fa-instagram"></i>
-              </a>
-              <a href="#" class="social-icon-circle" aria-label="LinkedIn">
-                <i class="fab fa-linkedin-in"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+              <div class="d-flex justify-content-center mb-4">
+                <div ref="recaptchaContainer"></div>
+              </div>
 
-    </div>
-  </div>
+              <button type="submit" class="btn custom-btn w-100 py-2.5" :disabled="isLoading">
+                {{ isLoading ? "Verifying & Sending..." : "Submit Message" }}
+              </button>
+            </form>
+          </div> 
+        </div> 
+
+      </div> 
+    </div> 
+  </section>
 </template>
 
 <script setup>
