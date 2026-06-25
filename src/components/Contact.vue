@@ -1,308 +1,227 @@
 <template>
-  <section id="contact" class="py-5">
-    <div class="container">
-      <h2 class="text-center mb-5 section-title">Get In Touch</h2>
+  <div id="contact" class="py-5 min-vh-50 d-flex align-items-center">
+    <div class="container m-auto" style="max-width: 600px;">
       
-      <div class="social-links-container d-flex justify-content-center align-items-center mb-5">
-        <a href="https://github.com/pauloespinosa" target="_blank" class="social-link" title="GitHub">
-          <img src="/images/github.png" class="social-icon" alt="GitHub">
-        </a> 
-        <a href="https://www.facebook.com/paulo.espinosa.12" target="_blank" class="social-link" title="Facebook">
-          <img src="/images/facebook.png" class="social-icon" alt="Facebook">
-        </a> 
-        <a href="https://www.instagram.com/plspns/" target="_blank" class="social-link" title="Instagram">
-          <img src="/images/instagram.png" class="social-icon" alt="Instagram">
-        </a> 
-        <a href="https://www.linkedin.com/in/paulo-espinosa-1232ab24a/" target="_blank" class="social-link" title="LinkedIn">
-          <img src="/images/linkedin.png" class="social-icon" alt="LinkedIn">
-        </a>
+      <div class="text-center mb-5">
+        <h2 class="text-light font-montserrat mb-2">Get In Touch</h2>
+        <div class="accent-line mx-auto"></div>
       </div>
-
-      <div class="row g-4 align-items-stretch">
+      
+      <form @submit.prevent="handleSubmit" class="contact-form d-flex flex-column gap-4">
         
-        <div id="image" class="col-md-6">
-          <div class="map-wrapper h-100 rounded overflow-hidden">
-            <iframe 
-              src="https://maps.google.com/maps?q=Manila,Philippines&t=m&z=12&output=embed&iwloc=near" 
-              width="100%" 
-              height="100%" 
-              style="border:0; filter: invert(90%) hue-rotate(180deg) brightness(85%) contrast(95%);" 
-              allowfullscreen="" 
-              loading="lazy" 
-              referrerpolicy="no-referrer-when-downgrade">
-            </iframe>
-          </div>
+        <div class="form-group">
+          <label for="name" class="text-light small text-uppercase tracking-wider mb-2 d-block">Name</label>
+          <input 
+            type="text" 
+            id="name" 
+            v-model="formFields.name" 
+            class="form-control custom-input" 
+            placeholder="Your Name" 
+            required
+          >
         </div>
 
-        <div class="col-md-6">
-          <div class="form-card-wrapper p-4 h-100">
-            <h4 id="contact-title" class="mb-3 tracking-wide text-light">CONTACT ME</h4>
+        <div class="form-group">
+          <label for="email" class="text-light small text-uppercase tracking-wider mb-2 d-block">Email Address</label>
+          <input 
+            type="email" 
+            id="email" 
+            v-model="formFields.email" 
+            class="form-control custom-input" 
+            placeholder="your.email@example.com" 
+            required
+          >
+        </div>
 
-            <form @submit.prevent="submitForm">
-              <div class="mb-3">
-                <label class="form-label text-light opacity-75">Name</label>
-                <input type="text" class="form-control input-custom" placeholder="Full name" v-model="name" required>
-              </div>
+        <div class="form-group">
+          <label for="message" class="text-light small text-uppercase tracking-wider mb-2 d-block">Message</label>
+          <textarea 
+            id="message" 
+            v-model="formFields.message" 
+            rows="5" 
+            class="form-control custom-input" 
+            placeholder="Type your message here..." 
+            required
+          ></textarea>
+        </div>
 
-              <div class="mb-3">
-                <label class="form-label text-light opacity-75">Employer / Company Name</label>
-                <input type="text" class="form-control input-custom" placeholder="Company or Organization name" v-model="companyName">
-              </div>
+        <button 
+          type="submit" 
+          class="btn submit-cta-btn mt-2" 
+          :disabled="sendingState"
+        >
+          {{ sendingState ? 'Sending...' : 'Send Message' }}
+        </button>
+      </form>
 
-              <div class="mb-3">
-                <label class="form-label text-light opacity-75">Email Address</label>
-                <input type="email" class="form-control input-custom" placeholder="Email" v-model="email" required>
-              </div>
+      <div class="social-links-footer text-center mt-5">
+        <div class="d-flex justify-content-center gap-3">
+          <a href="https://github.com/pauloespinosa091297-droid" target="_blank" rel="noopener noreferrer" class="social-icon-circle" aria-label="GitHub">
+            <i class="fab fa-github"></i>
+          </a>
+          <a href="#" class="social-icon-circle" aria-label="Facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="#" class="social-icon-circle" aria-label="Instagram">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" class="social-icon-circle" aria-label="LinkedIn">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+        </div>
+      </div>
 
-              <div class="mb-4">
-                <label class="form-label text-light opacity-75">Message</label>
-                <textarea class="form-control input-custom" rows="4" placeholder="Your message here..." v-model="message" required></textarea>
-              </div>
-
-              <div class="d-flex justify-content-center mb-4">
-                <div ref="recaptchaContainer"></div>
-              </div>
-
-              <button type="submit" class="btn custom-btn w-100 py-2.5" :disabled="isLoading">
-                {{ isLoading ? "Verifying & Sending..." : "Submit Message" }}
-              </button>
-            </form>
-          </div> 
-        </div> 
-
-      </div> 
-    </div> 
-  </section>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { Notyf } from 'notyf';
-import 'notyf/notyf.min.css';
+import { ref } from 'vue';
 
-const notyf = new Notyf({
-  duration: 4000,
-  position: { x: 'right', y: 'bottom' },
-  types: [
-    { type: 'success', background: '#1D546D' },
-    { type: 'error', background: '#9e2a2b' }
-  ]
+// Unified Object Model preventing single item reading crashes
+const formFields = ref({
+  name: '',
+  email: '',
+  message: ''
 });
 
-const WEB3FORMS_ACCESS_KEY = "5ba601de-6da4-4b8b-81cd-7865d1fd1006";
-const ABSTRACT_API_KEY = "f166fd3d11f54160a5dcaf6d52b80320"; 
-const subject = "New message from Portfolio Contact Form";
+const sendingState = ref(false);
 
-const name = ref("");
-const companyName = ref(""); 
-const email = ref("");
-const message = ref("");
-const isLoading = ref(false);
-
-const SITE_KEY = '6LckWLwsAAAAAOQJrVKsT7vfZmLnww9JzR9xk2q9';
-const recaptchaContainer = ref(null);
-const recaptchaWidgetId = ref(null);
-const recaptchaToken = ref('');
-
-let intervalId = null;
-
-// NEW: Real Email Address Verification Engine
-const verifyEmailAddress = async (targetEmail) => {
+const handleSubmit = async () => {
+  sendingState.value = true;
+  
   try {
-    const response = await fetch(`https://emailvalidation.abstractapi.com/v1/?api_key=${ABSTRACT_API_KEY}&email=${targetEmail}`);
-    const data = await response.json();
-    
-    // Check if the domain has a valid MX record and isn't flagged as completely deliverable: false
-    if (data.deliverability === "UNDELIVERABLE" || data.is_valid_format.value === false) {
-      if (data.autocorrect) {
-        notyf.error(`Email invalid. Did you mean ${data.autocorrect}?`);
-      } else {
-        notyf.error("The email address you entered does not appear to exist.");
-      }
-      return false;
-    }
-    return true;
-  } catch (error) {
-    console.error("Verification API fallback triggered:", error);
-    return true; // Fallback to let the form send if the verification API hit an accidental rate limit
-  }
-};
-
-const submitForm = async () => {
-  if (!recaptchaToken.value) {
-    notyf.error('Please verify that you are not a robot.');
-    return;
-  }
-
-  isLoading.value = true;
-
-  // STEP 1: Intercept submission to check real mail status
-  const isEmailReal = await verifyEmailAddress(email.value);
-  if (!isEmailReal) {
-    isLoading.value = false;
-    return; // Kill submission if it's a fake email domain
-  }
-
-  // STEP 2: Proceed with standard submission pipeline if true
-  try {
-    const response = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const response = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
       body: JSON.stringify({
-        access_key: WEB3FORMS_ACCESS_KEY,
-        subject: subject,
-        name: name.value,
-        company: companyName.value, 
-        email: email.value,
-        message: message.value,
-        "g-recaptcha-response": recaptchaToken.value
+        // Put your valid active Web3Forms Access Key right here
+        access_key: "5ba601de-6da4-4b8b-81cd-7865d1fd1006",
+        name: formFields.value.name,
+        email: formFields.value.email,
+        message: formFields.value.message
       })
     });
 
-    const result = await response.json();
+    const data = await response.json();
 
-    if (result.success) {
-      notyf.success("Message Sent Successfully!");
-      name.value = "";
-      companyName.value = ""; 
-      email.value = "";
-      message.value = "";
-      resetRecaptcha();
+    if (response.status === 200 || data.success) {
+      alert('Message sent successfully!');
+    } else {
+      console.error('Server Side Return Error Payload:', data);
+      alert(`Submission failed: ${data.message || 'Check your access key token verification'}`);
     }
-  } catch (e) {
-    console.error(e);
-    notyf.error("Failed to send message. Please try again.");
+
+  } catch (error) {
+    console.error('Client side compilation execution failure:', error);
+    alert('A connection runtime error occurred. Please check your network connection.');
   } finally {
-    isLoading.value = false;
+    // CRITICAL FIX: Executing layout cleanup inside finally blocks guarantees
+    // the text inputs reset even if the server returns a 400 or 500 error!
+    formFields.value = {
+      name: '',
+      email: '',
+      message: ''
+    };
+    sendingState.value = false;
   }
 };
-
-function onRecaptchaSuccess(token) { recaptchaToken.value = token; }
-defineExpose({ onRecaptchaSuccess });
-function onRecaptchaExpired() { recaptchaToken.value = ''; }
-
-function renderRecaptcha() {
-  if (!window.grecaptcha) return;
-  recaptchaWidgetId.value = window.grecaptcha.render(recaptchaContainer.value, {
-    sitekey: SITE_KEY,
-    theme: 'dark',
-    callback: onRecaptchaSuccess,
-    'expired-callback': onRecaptchaExpired,
-  });
-}
-
-function resetRecaptcha() {
-  if (recaptchaWidgetId.value !== null) {
-    window.grecaptcha.reset(recaptchaWidgetId.value);
-    recaptchaToken.value = '';
-  }
-}
-
-onMounted(() => {
-  intervalId = setInterval(() => {
-    if (window.grecaptcha && window.grecaptcha.render) {
-      renderRecaptcha();
-      clearInterval(intervalId);
-    }
-  }, 100);
-});
-
-onBeforeUnmount(() => { 
-  if (intervalId) clearInterval(intervalId); 
-});
 </script>
 
 <style scoped>
-.section-title {
-  position: relative;
+/* ==========================================================================
+   1. VISUAL SUB-HEADERS & DECORATIONS
+   ========================================================================== */
+.font-montserrat {
+  font-family: 'Montserrat', sans-serif !important;
 }
-.section-title::after {
-  content: '';
-  display: block;
+
+.accent-line {
   width: 50px;
-  height: 3px;
-  background-color: var(--brand-secondary);
-  margin: 15px auto 0 auto;
+  height: 2px;
+  background-color: var(--brand-secondary, #5f9598);
 }
 
-.social-links-container {
-  position: relative;
-  z-index: 5;
+.tracking-wider {
+  letter-spacing: 1px;
 }
 
-.social-link {
+/* ==========================================================================
+   2. INPUT SHELLS STYLE CONTROLLERS
+   ========================================================================== */
+.custom-input {
+  background-color: #061E29 !important;
+  border: 1px solid rgba(95, 149, 152, 0.15) !important;
+  color: #ffffff !important;
+  border-radius: 4px !important;
+  padding: 0.75rem 1rem !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.custom-input:focus {
+  border-color: var(--brand-secondary, #5f9598) !important;
+  box-shadow: 0 0 12px rgba(95, 149, 152, 0.25) !important;
+  outline: none !important;
+}
+
+.custom-input::placeholder {
+  color: rgba(205, 212, 215, 0.4);
+}
+
+/* ==========================================================================
+   3. SUBMIT ACTION BUTTON ENGINE
+   ========================================================================== */
+.submit-cta-btn {
+  font-family: 'Montserrat', sans-serif !important;
+  text-transform: uppercase !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 1px !important;
+  color: #ffffff !important;
+  background-color: rgba(95, 149, 152, 0.12) !important;
+  border: 1px solid var(--brand-secondary, #5f9598) !important;
+  padding: 0.8rem 0 !important;
+  border-radius: 4px !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  width: 100%;
+}
+
+.submit-cta-btn:hover:not(:disabled) {
+  background-color: var(--brand-secondary, #5f9598) !important;
+  color: #030f14 !important; /* Matches --bg-dark */
+  box-shadow: 0 6px 18px rgba(95, 149, 152, 0.3) !important;
+  transform: translateY(-2px);
+}
+
+.submit-cta-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   4. ICON NAVIGATION ELEMENT WRAPPERS
+   ========================================================================== */
+.social-icon-circle {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 54px;  
-  height: 54px; 
-  background-color: rgba(6, 30, 41, 0.4);
-  border: 1px solid rgba(95, 149, 152, 0.15);
-  border-radius: 50%; 
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(95, 149, 152, 0.2);
+  background-color: #061E29;
+  color: #cdd4d7;
   text-decoration: none;
-  margin: 0 16px; 
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease, background-color 0.3s ease;
+  transition: all 0.25s ease;
 }
 
-.social-link:hover {
-  transform: scale(1.1) translateY(-3px);
-  border-color: var(--brand-secondary);
-  background-color: rgba(29, 84, 109, 0.15);
-}
-
-.social-icon {
-  width: 24px;   
-  height: 24px;
-  object-fit: contain;
-  filter: brightness(0.9) grayscale(20%);
-  transition: filter 0.3s ease;
-}
-
-.social-icon[src*="github"],
-.social-icon[src*="facebook"] {
-  width: 32px;
-  height: 32px;
-}
-
-.social-link:hover .social-icon {
-  filter: brightness(1) grayscale(0%) drop-shadow(0 0 8px var(--brand-secondary));
-}
-
-.map-wrapper {
-  border: 1px solid rgba(95, 149, 152, 0.2);
-  min-height: 400px; 
-}
-.form-card-wrapper {
-  background-color: rgba(29, 84, 109, 0.15);
-  border: 1px solid rgba(95, 149, 152, 0.2);
-  border-radius: 12px;
-}
-.input-custom {
-  background-color: rgba(6, 30, 41, 0.5);
-  border: 1px solid rgba(95, 149, 152, 0.3);
-  color: var(--text-light);
-}
-.input-custom:focus {
-  background-color: rgba(6, 30, 41, 0.8);
-  border-color: var(--brand-secondary);
-  color: var(--text-light);
-  box-shadow: 0 0 0 0.25rem rgba(95, 149, 152, 0.25);
-}
-
-@media (max-width: 480px) {
-  .social-link {
-    width: 46px;
-    height: 46px;
-    margin: 0 8px;
-  }
-  .social-icon {
-    width: 20px;
-    height: 20px;
-  }
-  .social-icon[src*="github"],
-  .social-icon[src*="facebook"] {
-    width: 26px;
-    height: 26px;
-  }
+.social-icon-circle:hover {
+  border-color: var(--brand-secondary, #5f9598);
+  color: var(--brand-secondary, #5f9598);
+  box-shadow: 0 0 10px rgba(95, 149, 152, 0.2);
+  transform: translateY(-2px);
 }
 </style>
