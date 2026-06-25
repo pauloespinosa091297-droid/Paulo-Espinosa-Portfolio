@@ -1,35 +1,47 @@
 <template>
-	<div class="container-fluid" id="pre-footer">
-
-			<div class="row text-white">
-
-	<!-- Github -->
-	<div class="col-lg-3 col-md-3 pre-footer-col">
-
-		<a href="https://github.com/pauloespinosa" target="_blank"><img src="/images/github.png" class="w-50"></a> 
-	</div>
-
-	<!-- FB -->
-	<div class="col-lg-3 col-md-3 pre-footer-col">
-
-		<a href="https://www.facebook.com/paulo.espinosa.12" target="_blank"><img src="/images/facebook.png" class="w-75"></a> 
-	</div>
-
-	<!-- IG -->
-	<div class="col-lg-3 col-md-3 pre-footer-col">
-		<a href="https://www.instagram.com/plspns/" target="_blank"><img src="/images/instagram.png" class="w-50"></a> 
-
-	</div>
-
-	<!-- Linkedin -->
-	<div class="col-lg-3 col-md-3 pre-footer-col"> 
-		<a href="https://www.linkedin.com/in/paulo-espinosa-1232ab24a/" target="_blank"><img src="/images/linkedin.png" class="w-50"></a> 
-	</div>
-	</div>
-	</div>
-
-	<!-- Footer -->
-	<footer id="footer"class="footer text-center">
-		<p class="m-0">&copy; 2026 PAU. All Rights Reserved.</p>
-	</footer>
+  <footer id="footer" class="footer py-4 text-center">
+    <div class="container">
+      <p class="m-0 text-muted-custom">© 2026 PAULO. All Rights Reserved.</p>
+    </div>
+  </footer>
 </template>
+
+<style scoped>
+#pre-footer {
+  border-top: 1px solid rgba(95, 149, 152, 0.15);
+  background-color: rgba(6, 30, 41, 0.4);
+}
+
+.social-link {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.social-link:hover {
+  transform: scale(1.1);
+}
+
+.social-icon {
+  max-width: 40px;
+  height: auto;
+  filter: brightness(0.9) grayscale(20%);
+  transition: filter 0.3s ease;
+}
+
+.social-link:hover .social-icon {
+  filter: brightness(1) grayscale(0%) drop-shadow(0 0 8px var(--brand-secondary));
+}
+
+.footer {
+  background-color: #04141c;
+  border-top: 1px solid rgba(6, 30, 41, 0.8);
+}
+
+.text-muted-custom {
+  color: #8da4ae;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+
+
+</style>
