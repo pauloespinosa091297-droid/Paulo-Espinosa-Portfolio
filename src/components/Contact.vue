@@ -192,111 +192,96 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* ==========================================================================
-   1. VISUAL SUB-HEADERS & DECORATIONS
-   ========================================================================== */
-.font-montserrat {
-  font-family: 'Montserrat', sans-serif !important;
+.section-title {
+  position: relative;
 }
-
-.accent-line {
+.section-title::after {
+  content: '';
+  display: block;
   width: 50px;
-  height: 2px;
-  background-color: var(--brand-secondary, #5f9598);
+  height: 3px;
+  background-color: var(--brand-secondary);
+  margin: 15px auto 0 auto;
 }
 
-.tracking-wider {
-  letter-spacing: 1px;
+.social-links-container {
+  position: relative;
+  z-index: 5;
 }
 
-/* ==========================================================================
-   2. MAP WRAPPER ELEMENT CONFIGURATIONS
-   ========================================================================== */
-.map-wrapper {
-  min-height: 400px;
-  border: 1px solid rgba(95, 149, 152, 0.15);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.map-wrapper iframe {
-  filter: grayscale(100%) invert(92%) contrast(83%); /* Optional dark theme match styling */
-}
-
-/* ==========================================================================
-   3. INPUT SHELLS STYLE CONTROLLERS
-   ========================================================================== */
-.custom-input {
-  background-color: #061E29 !important;
-  border: 1px solid rgba(95, 149, 152, 0.15) !important;
-  color: #ffffff !important;
-  border-radius: 4px !important;
-  padding: 0.75rem 1rem !important;
-  transition: all 0.2s ease-in-out !important;
-}
-
-.custom-input:focus {
-  border-color: var(--brand-secondary, #5f9598) !important;
-  box-shadow: 0 0 12px rgba(95, 149, 152, 0.25) !important;
-  outline: none !important;
-}
-
-.custom-input::placeholder {
-  color: rgba(205, 212, 215, 0.4);
-}
-
-/* ==========================================================================
-   4. SUBMIT ACTION BUTTON ENGINE
-   ========================================================================== */
-.submit-cta-btn {
-  font-family: 'Montserrat', sans-serif !important;
-  text-transform: uppercase !important;
-  font-size: 0.8rem !important;
-  font-weight: 500 !important;
-  letter-spacing: 1px !important;
-  color: #ffffff !important;
-  background-color: rgba(95, 149, 152, 0.12) !important;
-  border: 1px solid var(--brand-secondary, #5f9598) !important;
-  padding: 0.8rem 0 !important;
-  border-radius: 4px !important;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-  width: 100%;
-}
-
-.submit-cta-btn:hover:not(:disabled) {
-  background-color: var(--brand-secondary, #5f9598) !important;
-  color: #030f14 !important;
-  box-shadow: 0 6px 18px rgba(95, 149, 152, 0.3) !important;
-  transform: translateY(-2px);
-}
-
-.submit-cta-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* ==========================================================================
-   5. ICON NAVIGATION ELEMENT WRAPPERS
-   ========================================================================== */
-.social-icon-circle {
+.social-link {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 1px solid rgba(95, 149, 152, 0.2);
-  background-color: #061E29;
-  color: #cdd4d7;
+  width: 54px;  
+  height: 54px; 
+  background-color: rgba(6, 30, 41, 0.4);
+  border: 1px solid rgba(95, 149, 152, 0.15);
+  border-radius: 50%; 
   text-decoration: none;
-  transition: all 0.25s ease;
+  margin: 0 16px; 
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease, background-color 0.3s ease;
 }
 
-.social-icon-circle:hover {
-  border-color: var(--brand-secondary, #5f9598);
-  color: var(--brand-secondary, #5f9598);
-  box-shadow: 0 0 10px rgba(95, 149, 152, 0.2);
-  transform: translateY(-2px);
+.social-link:hover {
+  transform: scale(1.1) translateY(-3px);
+  border-color: var(--brand-secondary);
+  background-color: rgba(29, 84, 109, 0.15);
+}
+
+.social-icon {
+  width: 24px;   
+  height: 24px;
+  object-fit: contain;
+  filter: brightness(0.9) grayscale(20%);
+  transition: filter 0.3s ease;
+}
+
+.social-icon[src*="github"],
+.social-icon[src*="facebook"] {
+  width: 32px;
+  height: 32px;
+}
+
+.social-link:hover .social-icon {
+  filter: brightness(1) grayscale(0%) drop-shadow(0 0 8px var(--brand-secondary));
+}
+
+.map-wrapper {
+  border: 1px solid rgba(95, 149, 152, 0.2);
+  min-height: 400px; 
+}
+.form-card-wrapper {
+  background-color: rgba(29, 84, 109, 0.15);
+  border: 1px solid rgba(95, 149, 152, 0.2);
+  border-radius: 12px;
+}
+.input-custom {
+  background-color: rgba(6, 30, 41, 0.5);
+  border: 1px solid rgba(95, 149, 152, 0.3);
+  color: var(--text-light);
+}
+.input-custom:focus {
+  background-color: rgba(6, 30, 41, 0.8);
+  border-color: var(--brand-secondary);
+  color: var(--text-light);
+  box-shadow: 0 0 0 0.25rem rgba(95, 149, 152, 0.25);
+}
+
+@media (max-width: 480px) {
+  .social-link {
+    width: 46px;
+    height: 46px;
+    margin: 0 8px;
+  }
+  .social-icon {
+    width: 20px;
+    height: 20px;
+  }
+  .social-icon[src*="github"],
+  .social-icon[src*="facebook"] {
+    width: 26px;
+    height: 26px;
+  }
 }
 </style>
